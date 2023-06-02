@@ -1,0 +1,18 @@
+{
+  "ref_archs": [
+    "two_stage_l3clos"
+  ],
+  "generators": [
+    {
+      "config_style": "junos",
+      "section": "system",
+      "template_text": "{# DO NOT COMMIT THIS CONFIG, ONLY USED TO GENERATE SRX4600 CONFIG using ANY Leaf Device #}\npolicy-options {\n{% for rt_name,rt_param in security_zones.items() if rt_name != \"default\" %}\n    policy-statement vrf-export-to-{{rt_name}} {\n        term 1 {\n            then {\n                community add {{rt_name}};\n                accept;\n            }\n        }\n        term 100 {\n            then reject;\n        }\n    }\n    policy-statement vrf-import-to-{{rt_name}} {\n        term 1 {\n            from community {{rt_name}};\n            then accept;\n        }\n        term 100 {\n            then reject;\n        }\n    }\n{% endfor %}\n{% for rt_name,rt_param in security_zones.items() if rt_name != \"default\" %}\n{% if rt_param['vni_id'] <= 65535 %}\n    community {{rt_name}} members target:{{rt_param['vni_id']}}:1;\n{% else %}\n    community {{rt_name}} members target:{{rt_param['vni_id']}}L:1;\n{% endif %}\n{% endfor %}\n}",
+      "negation_template_text": "",
+      "filename": ""
+    }
+  ],
+  "created_at": "2023-05-24T16:44:28.314477Z",
+  "id": "141f7c91-0514-4e61-b335-c76bbb91d258",
+  "last_modified_at": "2023-05-24T17:03:10.842399Z",
+  "display_name": "SRX4600_policy-options (NOT TO BE COMMITTED)"
+}
